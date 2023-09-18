@@ -11,7 +11,7 @@
     {
         private int mergedImageCount = 0;
 
-        public static Bitmap MergeBitmaps(List<Bitmap> listOfTileBitmaps, int columnCount, bool horizontalTiling)
+        public static Bitmap MergeBitmaps(List<Bitmap> listOfTileBitmaps, int columnCount, bool horizontalTiling, int[] padding)
         {
             int width = 1;
             int height = 1;
@@ -31,7 +31,7 @@
                 columnCount = listOfTileBitmaps.Count;
             }
             int rowCount = (int)Math.Ceiling((double)(listOfTileBitmaps.Count / ((double)columnCount)));
-            Bitmap image = new Bitmap(columnCount * width, rowCount * height, PixelFormat.Format32bppArgb);
+            Bitmap image = new Bitmap(columnCount * width + columnCount * padding[2] + columnCount * padding[3], rowCount * height + rowCount * padding[0] + rowCount * padding[1], PixelFormat.Format32bppArgb);
             Graphics graphics = Graphics.FromImage(image);
             SolidBrush brush = new SolidBrush(Color.FromArgb(0, 0xff, 240, 200));
             graphics.FillRectangle(brush, 0, 0, image.Width, image.Height);
@@ -42,7 +42,12 @@
                 {
                     int col = (int)Math.Floor((double)(n / ((double)columnCount)));
                     int row = n % columnCount;
-                    Point location = new Point(((row * width) + (width / 2)) - (tileBitmap.Width / 2), ((col * height) + (height / 2)) - (tileBitmap.Height / 2));
+
+                    int x = ((row * width) + (width / 2)) - (tileBitmap.Width / 2) + (row * padding[2]) + (row * padding[3]);
+                    int y = ((col * height) + (height / 2)) - (tileBitmap.Height / 2) + (col * padding[0]) + (col * padding[1]);
+
+
+                    Point location = new Point(x, y);
                     Size size = new Size(tileBitmap.Width, tileBitmap.Height);
                     Graphics.FromImage(image).DrawImage(tileBitmap, new Rectangle(location, size));
                     n++;
@@ -99,7 +104,7 @@
             try
             {
                 Console.WriteLine("🎨 Tiling direction: {0}, Bitmaps: {1}, Columns: {2}", tileMergerArgs.TilingDirection.Value, bitmaps.Count, tileMergerArgs.Columns);
-                bitmap = MergeBitmaps(bitmaps, tileMergerArgs.Columns, tileMergerArgs.TilingDirection == TilingDirection.LeftRight);
+                bitmap = MergeBitmaps(bitmaps, tileMergerArgs.Columns, tileMergerArgs.TilingDirection == TilingDirection.LeftRight, new int[] { 0,0,0,0 });
             }
             catch (Exception mergeImagesException)
             {
@@ -130,8 +135,29 @@
             return true;
         }
 
-        internal bool ProcessDirectoryToFile(Form parentForm, string directory, string fileTarget, int columnCount, string filter, bool horizontalTiling=true)
+        internal bool ProcessDirectoryToFile(Form parentForm, string directory, string fileTarget, int columnCount, string filter, bool horizontalTiling=true, string[] padding = null)
         {
+            int[] paddingInt = new int[] { 0, 0, 0, 0 };
+
+            if (padding != null)
+            {
+                try
+                {
+                    if (padding.Length != 4)
+                    {
+                        throw new ArgumentException("Padding must be an array of length 4.");
+                    }
+                    for (int i = 0; i < padding.Length; i++)
+                    {
+                        paddingInt[i] = int.Parse(padding[i]);
+                    }
+                } catch(Exception exception)
+                {
+                    MessageBox.Show(parentForm, "Error parsing padding: " + exception.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+
             Bitmap bitmap;
             this.mergedImageCount = 0;
             if (!Directory.Exists(directory))
@@ -154,7 +180,7 @@
             }
             try
             {
-                bitmap = MergeBitmaps(bitmaps, columnCount, horizontalTiling);
+                bitmap = MergeBitmaps(bitmaps, columnCount, horizontalTiling, paddingInt);
             }
             catch (Exception exception)
             {

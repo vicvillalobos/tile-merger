@@ -6,6 +6,7 @@
     using System.ComponentModel;
     using System.Drawing;
     using System.IO;
+    using System.Text.RegularExpressions;
     using System.Windows.Forms;
 
     public class MainForm : Form
@@ -31,6 +32,14 @@
         private RadioButton radioButtonHorizontal;
         private RadioButton radioButtonVertical;
         private GroupBox groupBoxTilingDirection;
+        private TextBox paddingTopTB;
+        private Label label3;
+        private Label label5;
+        private TextBox paddingBotTB;
+        private Label label6;
+        private TextBox paddingLeftTB;
+        private Label label7;
+        private TextBox paddingRightTB;
         private ToolTip toolTipController;
 
         public MainForm()
@@ -69,7 +78,7 @@
                 }
             }
             bool horizontalTiling = (this.radioButtonHorizontal.Checked);
-            if (merger.ProcessDirectoryToFile(this, text, fileTarget, columnCount, filter, horizontalTiling))
+            if (merger.ProcessDirectoryToFile(this, text, fileTarget, columnCount, filter, horizontalTiling, new string[] { paddingTopTB.Text, paddingBotTB.Text, paddingLeftTB.Text, paddingRightTB.Text }))
             {
                 this.labelInformation.Text = "The image " + this.textboxTarget.Text + " has been created.";
                 this.labelProcess.Text = merger.MergedImageCount + " images actually merged";
@@ -130,6 +139,14 @@
             this.radioButtonHorizontal = new System.Windows.Forms.RadioButton();
             this.radioButtonVertical = new System.Windows.Forms.RadioButton();
             this.groupBoxTilingDirection = new System.Windows.Forms.GroupBox();
+            this.paddingTopTB = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.paddingBotTB = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.paddingLeftTB = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.paddingRightTB = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownColumns)).BeginInit();
             this.groupBoxTilingDirection.SuspendLayout();
             this.SuspendLayout();
@@ -211,7 +228,7 @@
             // 
             this.buttonProcessImages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonProcessImages.BackColor = System.Drawing.Color.CornflowerBlue;
-            this.buttonProcessImages.Location = new System.Drawing.Point(304, 200);
+            this.buttonProcessImages.Location = new System.Drawing.Point(330, 295);
             this.buttonProcessImages.Name = "buttonProcessImages";
             this.buttonProcessImages.Size = new System.Drawing.Size(100, 23);
             this.buttonProcessImages.TabIndex = 5;
@@ -223,7 +240,7 @@
             // 
             this.buttonQuit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.buttonQuit.BackColor = System.Drawing.Color.CornflowerBlue;
-            this.buttonQuit.Location = new System.Drawing.Point(12, 200);
+            this.buttonQuit.Location = new System.Drawing.Point(12, 295);
             this.buttonQuit.Name = "buttonQuit";
             this.buttonQuit.Size = new System.Drawing.Size(65, 23);
             this.buttonQuit.TabIndex = 8;
@@ -243,8 +260,9 @@
             // 
             // labelInformation
             // 
+            this.labelInformation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.labelInformation.AutoSize = true;
-            this.labelInformation.Location = new System.Drawing.Point(9, 152);
+            this.labelInformation.Location = new System.Drawing.Point(12, 218);
             this.labelInformation.MaximumSize = new System.Drawing.Size(390, 60);
             this.labelInformation.MinimumSize = new System.Drawing.Size(390, 30);
             this.labelInformation.Name = "labelInformation";
@@ -295,9 +313,9 @@
             // 
             // labelProcess
             // 
-            this.labelProcess.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelProcess.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.labelProcess.AutoSize = true;
-            this.labelProcess.Location = new System.Drawing.Point(98, 205);
+            this.labelProcess.Location = new System.Drawing.Point(225, 279);
             this.labelProcess.MaximumSize = new System.Drawing.Size(200, 20);
             this.labelProcess.MinimumSize = new System.Drawing.Size(200, 0);
             this.labelProcess.Name = "labelProcess";
@@ -344,10 +362,117 @@
             this.groupBoxTilingDirection.TabStop = false;
             this.groupBoxTilingDirection.Text = "Tiling Direction";
             // 
+            // paddingTopTB
+            // 
+            this.paddingTopTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.paddingTopTB.Location = new System.Drawing.Point(12, 172);
+            this.paddingTopTB.MaximumSize = new System.Drawing.Size(90, 20);
+            this.paddingTopTB.MinimumSize = new System.Drawing.Size(60, 20);
+            this.paddingTopTB.Name = "paddingTopTB";
+            this.paddingTopTB.Size = new System.Drawing.Size(90, 20);
+            this.paddingTopTB.TabIndex = 20;
+            this.paddingTopTB.Text = "0";
+            this.paddingTopTB.TextChanged += new System.EventHandler(this.padding_TextChanged);
+            // 
+            // label3
+            // 
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(12, 156);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(68, 13);
+            this.label3.TabIndex = 21;
+            this.label3.Text = "Padding Top";
+            this.label3.Click += new System.EventHandler(this.label3_Click);
+            // 
+            // label5
+            // 
+            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(110, 156);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(82, 13);
+            this.label5.TabIndex = 23;
+            this.label5.Text = "Padding Bottom";
+            this.label5.Click += new System.EventHandler(this.label5_Click);
+            // 
+            // paddingBotTB
+            // 
+            this.paddingBotTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.paddingBotTB.Location = new System.Drawing.Point(110, 172);
+            this.paddingBotTB.MaximumSize = new System.Drawing.Size(90, 20);
+            this.paddingBotTB.MinimumSize = new System.Drawing.Size(60, 20);
+            this.paddingBotTB.Name = "paddingBotTB";
+            this.paddingBotTB.Size = new System.Drawing.Size(90, 20);
+            this.paddingBotTB.TabIndex = 22;
+            this.paddingBotTB.Text = "0";
+            this.paddingBotTB.TextChanged += new System.EventHandler(this.padding_TextChanged);
+            // 
+            // label6
+            // 
+            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(217, 156);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(67, 13);
+            this.label6.TabIndex = 25;
+            this.label6.Text = "Padding Left";
+            // 
+            // paddingLeftTB
+            // 
+            this.paddingLeftTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.paddingLeftTB.Location = new System.Drawing.Point(217, 172);
+            this.paddingLeftTB.MaximumSize = new System.Drawing.Size(90, 20);
+            this.paddingLeftTB.MinimumSize = new System.Drawing.Size(60, 20);
+            this.paddingLeftTB.Name = "paddingLeftTB";
+            this.paddingLeftTB.Size = new System.Drawing.Size(90, 20);
+            this.paddingLeftTB.TabIndex = 24;
+            this.paddingLeftTB.Text = "0";
+            this.paddingLeftTB.TextChanged += new System.EventHandler(this.padding_TextChanged);
+            // 
+            // label7
+            // 
+            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(331, 156);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(74, 13);
+            this.label7.TabIndex = 27;
+            this.label7.Text = "Padding Right";
+            this.label7.Click += new System.EventHandler(this.label7_Click);
+            // 
+            // paddingRightTB
+            // 
+            this.paddingRightTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.paddingRightTB.Location = new System.Drawing.Point(331, 172);
+            this.paddingRightTB.MaximumSize = new System.Drawing.Size(90, 20);
+            this.paddingRightTB.MinimumSize = new System.Drawing.Size(60, 20);
+            this.paddingRightTB.Name = "paddingRightTB";
+            this.paddingRightTB.Size = new System.Drawing.Size(90, 20);
+            this.paddingRightTB.TabIndex = 26;
+            this.paddingRightTB.Text = "0";
+            this.paddingRightTB.TextChanged += new System.EventHandler(this.padding_TextChanged);
+            // 
             // MainForm
             // 
             this.BackColor = System.Drawing.Color.Ivory;
-            this.ClientSize = new System.Drawing.Size(416, 235);
+            this.ClientSize = new System.Drawing.Size(442, 330);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.paddingRightTB);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.paddingLeftTB);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.paddingBotTB);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.paddingTopTB);
             this.Controls.Add(this.groupBoxTilingDirection);
             this.Controls.Add(this.labelProcess);
             this.Controls.Add(this.checkboxRememberSettings);
@@ -463,6 +588,43 @@
         private void MainForm_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void padding_TextChanged(object sender, EventArgs e)
+        {
+            // get textbox from event
+            TextBox textbox = (TextBox)sender;
+
+            var numbers = Regex.Matches(textbox.Text, @"[0-9]+");
+
+            if (numbers.Count > 0)
+            {
+                textbox.Text = numbers[0].Value;
+            }
+            else
+            {
+                textbox.Text = "";
+            }
         }
     }
 }
